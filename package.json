@@ -1,0 +1,14 @@
+{
+  "name": "sound-player",
+  "version": "1.0.0",
+  "description": "Desktop extension for SoundCloud",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Yoganathan",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^6.0.12"
+  }
+}
