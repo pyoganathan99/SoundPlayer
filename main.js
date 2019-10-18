@@ -1,26 +1,44 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const { app, BrowserWindow } = require('electron')
 const path = require('path')
+
+const { ipcMain } = require('electron');
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    autoHideMenuBar: true,
+    fullscreen: false,
+    maximizable: true,
+    frame: false,
+    resizable: true,
+    alwaysOnTop: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
 
+  mainWindow.loadURL('https://soundcloud.com/yoganathan-palaniswamy/likes')
+
+  mainWindow.webContents.on('did-finish-load', (event) => {
+    mainWindow.webContents.send('hi');
+  })
+
+  mainWindow.setTitle('Yogi browser');
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  //mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
+
+  mainWindow.on('page-title-updated', function (event) {
+    event.preventDefault();
+  })
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -30,6 +48,38 @@ function createWindow () {
     mainWindow = null
   })
 }
+
+
+ipcMain.on('asynchronous-message', (event, arg) => {
+  console.log(arg);
+  switch (arg) {
+    case 'next-up-open':
+      mainWindow.setResizable(true);
+      mainWindow.setPosition(
+        mainWindow.getPosition()[0],
+        mainWindow.getPosition()[1] - (400 - 48)
+      );
+      mainWindow.setSize(370, 400);
+      mainWindow.setResizable(false);
+      break;
+
+    case 'next-up-close':
+      mainWindow.setResizable(true);
+      mainWindow.setPosition(
+        mainWindow.getPosition()[0],
+        mainWindow.getPosition()[1] + (400 - 48)
+      );
+      mainWindow.setSize(370, 48);
+      mainWindow.setResizable(false);
+      break;
+
+    case 'engage-mini-player':
+      mainWindow.setResizable(true);
+      mainWindow.setSize(370, 48);
+      mainWindow.setResizable(false);
+      break;
+  }
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
